@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>股票回测系统</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📈 股票回测系统</h1>
+            <p class="subtitle">基于K线策略和交易策略的量化回测工具</p>
+        </header>
+        
+        <div class="main-content">
+            <!-- 配置区域 -->
+            <section class="config-section">
+                <h2>⚙️ 策略配置</h2>
+                
+                <div class="config-grid">
+                    <div class="config-group">
+                        <label for="stockCode">股票代码</label>
+                        <input type="text" id="stockCode" placeholder="多个股票用分号分隔，如: 000001;600000">
+                        <small>支持多只股票回测</small>
+                    </div>
+                    
+                    <div class="config-group">
+                        <label for="backtestYear">回测年数</label>
+                        <input type="number" id="backtestYear" min="1" max="20" value="3">
+                        <small>历史回测的时间跨度</small>
+                    </div>
+                    
+                    <div class="config-group">
+                        <label for="saveOffline">
+                            <input type="checkbox" id="saveOffline" checked>
+                            保存离线数据
+                        </label>
+                        <small>启用后将缓存股票数据到本地</small>
+                    </div>
+                </div>
+                
+                <div class="strategy-section">
+                    <h3>📊 K线策略</h3>
+                    <div class="config-group">
+                        <label for="klineStrategy">买入K线条件</label>
+                        <input type="text" id="klineStrategy" placeholder="(D5MA > D10MA) && (D10MA > D30MA)">
+                        <small>支持 DMA/WMA/MMA 均线，支持 &&(与)、||(或)、!(非)、*N(连续N天)</small>
+                    </div>
+                </div>
+                
+                <div class="strategy-section">
+                    <h3>💹 交易策略</h3>
+                    <div class="config-grid">
+                        <div class="config-group">
+                            <label for="buyCondition">买入条件</label>
+                            <input type="text" id="buyCondition" placeholder="DK < -2%">
+                            <small>当日跌幅条件，如: DK < -2%</small>
+                        </div>
+                        
+                        <div class="config-group">
+                            <label for="gainPct">止盈比例 (%)</label>
+                            <input type="number" id="gainPct" min="0" max="100" step="0.5" value="5">
+                        </div>
+                        
+                        <div class="config-group">
+                            <label for="lossPct">止损比例 (%)</label>
+                            <input type="number" id="lossPct" min="0" max="100" step="0.5" value="10">
+                        </div>
+                        
+                        <div class="config-group">
+                            <label for="holdPeriod">最长持有周期 (天)</label>
+                            <input type="number" id="holdPeriod" min="1" max="365" value="60">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="button-group">
+                    <button id="saveConfigBtn" class="btn btn-secondary">💾 保存配置</button>
+                    <button id="startBacktestBtn" class="btn btn-primary">🚀 开始回测</button>
+                </div>
+            </section>
+            
+            <!-- 结果区域 -->
+            <section class="result-section" id="resultSection" style="display: none;">
+                <h2>📊 回测结果</h2>
+                
+                <!-- 统计摘要 -->
+                <div class="stats-cards" id="statsCards">
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalTrades">0</div>
+                        <div class="stat-label">总交易次数</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="winRate">0%</div>
+                        <div class="stat-label">赢率</div>
+                    </div>
+                    <div class="stat-card profit">
+                        <div class="stat-value" id="totalReturn">¥0</div>
+                        <div class="stat-label">总收益</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="returnPct">0%</div>
+                        <div class="stat-label">收益率</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="avgHoldDays">0</div>
+                        <div class="stat-label">平均持有天数</div>
+                    </div>
+                </div>
+                
+                <!-- 交易记录表格 -->
+                <div class="trades-table-container">
+                    <h3>📝 交易明细</h3>
+                    <table class="trades-table" id="tradesTable">
+                        <thead>
+                            <tr>
+                                <th>买入日期</th>
+                                <th>股票代码</th>
+                                <th>股票名称</th>
+                                <th>买入价格</th>
+                                <th>卖出日期</th>
+                                <th>卖出价格</th>
+                                <th>盈亏金额</th>
+                                <th>盈亏比例</th>
+                                <th>卖出原因</th>
+                                <th>持有天数</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tradesTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+        
+        <!-- 加载遮罩 -->
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">正在回测中，请稍候...</div>
+        </div>
+    </div>
+    
+    <script src="/static/app.js"></script>
+</body>
+</html>
